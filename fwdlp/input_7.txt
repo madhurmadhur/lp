@@ -1,0 +1,8 @@
+f=1
+i=2
+if i<=2 goto 8
+f = f*i
+t1 = i+1
+i=t1
+goto 3
+exit

@@ -1,0 +1,193 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lp;
+
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.TreeSet;
+
+/**
+ *
+ * @author CES
+ */
+public class Prac4 
+{
+
+    /**
+     * @param args the command line arguments
+     */
+   private static TreeSet<String> table=new TreeSet<>();
+    public static void main(String[] args) 
+    {
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        Rule list[]=new Rule[n];
+        //Input
+        for(int i=0;i<n;i++)
+        {
+            list[i]=new Rule(sc.next(),sc.next());
+            
+        }
+        
+        TreeSet<String> ts[]=new TreeSet[n];
+        TreeSet<String> tsfol[]=new TreeSet[n];
+        //first
+        for(int i=0;i<n;i++)
+        {
+            ts[i]=new TreeSet<String>();
+            ts[i]=first(list[i].l,n,list,ts[i]);
+            
+        }
+        
+        //Follow
+         for(int i=0;i<n;i++)
+        {
+            tsfol[i]=new TreeSet<String>();
+            tsfol[i]=follow(list[i].l,n,list,tsfol[i]);
+            
+        }
+        
+        for(int i=0;i<n;i++)
+        {
+            System.out.printf("first(%s)={",list[i].l);
+            for(String s:ts[i])
+                System.out.printf("%s ",s);
+            
+            
+            System.out.println("}");
+        }
+        System.out.println("\n\n");
+        
+        for(int i=0;i<n;i++)
+        {
+            System.out.printf("follow(%s)={",list[i].l);
+            for(String s:tsfol[i])
+                System.out.printf("%s ",s);
+            
+            
+            System.out.println("}");
+            
+            
+        }
+        System.out.println("\n\n");
+        for(int i=0;i<list.length;i++)
+        {
+            int flag=0;
+            String[] pts=list[i].r.split("/");
+            for(String s:pts)
+                if(s.equals("*")){
+                    flag=1;
+                break;}
+            if(flag==1)
+            {
+                for(String s:tsfol[i])
+                {
+                    if(s!="*")
+                    {
+                        table.add("Table["+list[i].l+","+s+"]= "+list[i].l+"->*");
+                    }
+                }
+            }
+            
+        }
+        for(String s:table)
+            {
+                System.out.println(s);
+            }
+    }
+    
+    public static TreeSet first(String sym,int n,Rule[] list,TreeSet<String> fst)
+    {
+        if(sym.length()==1 && Character.isUpperCase(sym.charAt(0)))
+        {
+            for(int i=0;i<n;i++)
+            {
+                if(list[i].l.equals(sym))
+                {
+                    String pts[]=list[i].r.split("/");
+                    for(String v:pts){
+                        fst=first(v,n,list,fst);
+                        if(!"*".equals(v)){
+                            for(String s:fst)
+                                if(!s.equals("*"))
+                        table.add("Table["+list[i].l+","+s+"]= "+list[i].l+"->"+v);}}
+                    
+                }
+            }
+            
+        }
+        
+        else
+        {
+            if(!Character.isUpperCase(sym.charAt(0)))
+                fst.add(sym.substring(0, 1));
+            else
+            {
+                int i=0;
+                do{
+                    if(fst.contains("*"))
+                    fst.remove("*");
+                fst=first(sym.substring(i, i+1),n,list,fst);
+                i++;
+                }while(fst.contains("*") && i<sym.length());
+            }
+        }
+        
+      return fst;  
+    }
+    
+    public static TreeSet follow(String sym,int n,Rule[] list,TreeSet<String> fst)
+    {
+            if(sym.equals("S"))
+                fst.add("$");
+            for(int j=0;j<n;j++)
+            {
+            String[] parts=list[j].r.split("/");
+            for(String v:parts)
+            {
+                //System.out.println(v);
+                //System.out.println(v.contains(sym));
+                //if(v.contains(sym))
+                   // System.out.println(v.indexOf(sym.charAt(0)));
+                if(v.contains(sym) && v.indexOf(sym.charAt(0))<v.length()-1)
+                    fst=first(v.substring(v.indexOf(sym)+1),n,list,fst);
+                if((fst.contains("*")||v.indexOf(sym.charAt(0))==v.length()-1) && !list[j].l.equals(sym))
+                {
+                    if(fst.contains("*"))
+                        fst.remove("*");
+                    fst=follow(list[j].l,n,list,fst);
+                }
+            }
+        //System.out.println();
+        }
+      return fst;  
+    }
+    
+}
+
+
+class Rule
+{
+    String l;
+    String r;
+    
+    public Rule(String l,String r)
+    {
+        this.l=l;
+        this.r=r;
+    }
+}
+
+/*
+6
+S aBDh
+B cC
+C be/*
+D EF
+E g/*
+F f/*
+*/
+    

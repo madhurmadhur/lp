@@ -1,0 +1,13 @@
+%%
+%class practical3
+%standalone
+%{
+int cases=0;
+%}
+%%
+
+"switch"|"if"|"("|")"|"{"|"}" { System.out.printf("%s ",yytext()); } (\w+)(([\-\+\*\/]\w+)|[\-\+]{2}) {System.out.printf("expression");} "case" {System.out.printf("%s ",yytext()); cases++;} [a-zA-Z]["="][0-9] {System.out.printf("initialization");}
+
+[a-zA-z]("="|"<="|">="|"!="|">"|"<")[a-zA-Z0-9] { System.out.printf("condition");} [a-zA-z]("++"|"--") { System.out.printf("increment/decrement");} \".*\" { System.out.printf("string");}
+[\t] ;
+. { }

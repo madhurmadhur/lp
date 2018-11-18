@@ -1,0 +1,133 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package leader;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @author HP
+ */
+public class leader {
+
+    static HashMap<Integer, String> map;
+    static int count;
+    static ArrayList<Integer> arr = new ArrayList<Integer>();
+
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        BufferedReader br = new BufferedReader(new FileReader("E:\\LP\\input_7.txt"));
+        map = new HashMap<Integer, String>();
+
+        String s;
+        count = 0;
+        System.out.println("Input : ");
+        while ((s = br.readLine()) != null) {
+            count++;
+            System.out.println(count + " " + s);
+            map.put(count, s);
+
+        }
+
+        leader();
+        Collections.sort(arr);
+        Set<Integer> ss = new LinkedHashSet<Integer>(arr);
+        System.out.println();
+        System.out.println("Leaders : ");
+        System.out.println(ss);
+        System.out.println();
+        blocks(ss);
+    }
+
+    public static void leader() {
+        arr.add(1);
+        for (int i = 2; i < count; i++) {
+            if (map.get(i).startsWith("if")) {
+                arr.add(i);
+                String[] a = map.get(i).split("goto");
+                System.out.println("d" + a[1]);
+                arr.add(Integer.parseInt(a[1].substring(1)));
+                int j = i + 1;
+                if (map.get(j).startsWith("goto")) {
+                    arr.add(Integer.parseInt(map.get(j).substring(5)));
+
+                } else {
+                    arr.add(i + 1);
+                }               
+            } else if (map.get(i).startsWith("goto")) {
+                String[] a = map.get(i).split("goto");
+                System.out.println("f" + a[1]);
+                arr.add(Integer.parseInt(a[1].substring(1)));
+            }
+        }
+    }
+
+    public static void blocks(Set<Integer> ss) {
+        int d = 1;
+        HashMap<Integer, Integer> map1 = new HashMap<Integer, Integer>();
+        List<Integer> aList = new ArrayList<Integer>(ss.size());
+        for (Integer x : ss) {
+            aList.add(x);
+        }
+        ArrayList<Integer> fd = new ArrayList<Integer>();
+
+        for (int i = 0; i < aList.size() - 1; i++) {
+            map1.put(aList.get(i), aList.get(i + 1) - 1);
+
+        }
+        map1.put(8, Integer.MAX_VALUE);
+        int counter = 0;
+        for (int i = 0; i < aList.size() - 1; i++) {
+            System.out.println("Block " + d);
+            int j;
+            for (j = aList.get(i); j < aList.get(i + 1); j++) {
+                System.out.println(j + " " + map.get(j));
+            }
+            j--;
+            int blocked = 0;
+            if (map.get(j).contains("goto")) {
+                String[] a = map.get(j).split("goto");
+               // System.out.println("f" + a[1]);
+                blocked = 0;
+                int sa = Integer.parseInt(a[1].substring(1));
+                counter = 0;
+                for (Map.Entry<Integer, Integer> ent : map1.entrySet()) {
+                    counter++;
+                    if (ent.getKey() <= sa && ent.getValue() >= sa) {
+                        blocked = counter;
+                        break;
+                    }
+                }
+            }
+            if (map.get(j).startsWith("goto")) {
+
+                System.out.println("goto" + blocked);
+            } else if (map.get(j).startsWith("goto") == false && map.get(j).contains("goto")) {
+
+                System.out.println("goto " + (d + 1) + " & goto" + blocked);
+            } else {
+                System.out.println("goto " + (d + 1));
+            }
+            d++;
+            System.out.println();
+        }
+        if(map.get(count).startsWith("exit")){
+            System.out.println("Block "+d);
+            System.out.println(count+" "+"exit");
+        }
+
+    }
+
+}

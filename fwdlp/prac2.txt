@@ -1,0 +1,262 @@
+PRACTICAL 2A]
+
+ANALYZER.l
+
+%{
+
+#include"y.tab.h"
+
+#include<math.h>
+
+extern yylval;
+
+%}
+
+%%
+
+[A-Za-z][A-Za-z0-9]* {return ID;}
+
+[0-9]+ {yylval=atoi(yytext);return NUM;}
+
+[+]{return '+';} [-] {return '-';}
+
+[*] {return '*';}
+
+[/] {return '/';} [\t]+;
+
+
+[\n] {return 0;}
+
+. {return yytext[0];
+
+}
+
+%%
+
+ANALYZER.y
+
+%{
+
+#include<stdio.h>
+
+%}
+
+%token NUM ID '+' '-' '*' '/' %left '-''+'
+
+%left '*''/' %left '('')'
+
+%%
+
+arithmetic: exp {printf(" Result=%d\n",$$);} exp:exp'+'exp {$$=$1+$3;}
+
+|exp'-'exp {$$=$1-$3;} |exp'*'exp {$$=$1*$3;}
+
+|exp'/'exp
+
+{
+
+if($3==0){
+
+yyerror("Error");}
+
+else
+
+{
+
+$$=$1/$3;
+
+}
+
+}
+
+|'('exp')' {$$=$2;}
+
+|ID {$$=$1;}
+
+|NUM {$$=$1;}
+
+%%
+
+main()
+
+{
+
+printf("Enter the Expr. in terms of integers\n"); if(yyparse()==0)
+
+printf("Success\n");
+
+}
+
+yywrap(){}
+
+yyerror()
+
+{
+
+printf("Error\n");
+
+}
+
+OUTPUT
+
+cse@cse-Veriton-M200-H81:~$ lex prac2a.l cse@cse-Veriton-M200-H81:~$ yacc -d prac2a.y cse@cse-Veriton-M200-H81:~$ gcc lex.yy.c y.tab.c cse@cse-Veriton-M200-H81:~$ ./a.out Enter the Expr. in terms of integers
+
+1+2*3-4
+
+Result=3
+
+Success
+
+PRACTICAL 2B]
+
+PRACTICAL2B.l
+
+%{
+
+#include<stdio.h>
+
+#include "y.tab.h"
+
+%}
+
+%%
+
+for	{return FOR;}
+
+[>]{return G;} [<] {return L;} \>\= {return GE;} \<\= {return LE;} \=\= {return EE;} \&\& {return AND;} \|\| {return OR;}
+
+[A-Za-z]+ {return ID;} [0-9]+ {return NUM;}
+
+%%
+
+
+PRACTICAL2B.y
+
+%{
+
+#include<stdio.h>
+
+#include<stdlib.h>
+
+int count=0;
+
+%}
+
+%token FOR ID NUM G L GE LE EE AND OR
+
+%right '='
+
+%left OR AND
+
+%left L G LE GE EE
+
+%left '+' '-'
+
+%left '*' '/'
+
+%%
+
+validation : S	{ printf("CORRECT"); printf("LEVEL= %d\n",count);
+}
+
+S : FOR'('E1 ';' E2 ';' E3')'DEF {count++;}
+
+DEF : '{'BODY'}'
+
+|S
+
+|E
+
+;
+
+BODY : E ';' BODY
+
+| S
+
+|E ';'
+
+;
+
+E1 : ID'='NUM ;
+
+E2 : E G E
+
+|E L E
+
+|E GE E
+
+|E LE E
+
+|E EE E
+
+|E AND E
+
+|E OR E
+
+;
+
+|E'-''-'
+
+;
+
+|E '-' E
+
+|E '*' E
+
+|E '/' E
+
+|ID
+
+|NUM
+
+;
+
+%%
+
+main()
+
+{
+
+yyparse();
+
+}
+
+yywrap()
+
+{
+
+return 1;
+
+}
+
+yyerror()
+
+{
+
+printf("Error\n");
+
+}
+
+OUTPUT
+
+cse@cse-Veriton-M200-H81:~$ lex practical2b.l
+
+cse@cse-Veriton-M200-H81:~$ yacc -d practical2b.y
+
+cse@cse-Veriton-M200-H81:~$ gcc lex.yy.c y.tab.c
+
+cse@cse-Veriton-M200-H81:~$ ./a.out
+
+for(i=0;i<4;i++){
+
+for(j=1;j<3;j++){
+
+i=9;
+
+}
+
+}
+
+CORRECT
+
+LEVEL=2

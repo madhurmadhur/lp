@@ -1,0 +1,226 @@
+PRACTICAL NO : 5
+
+import java.util.*;
+
+import java.io.*;
+
+import java.lang.*;
+
+
+public class LanguageProcessing {
+
+
+static int n=8,m=17;
+
+static String ptable[][] = new String[n][m];
+
+static Map<String,Integer> mapNT = new HashMap();
+
+static Map<String,Integer> mapT = new HashMap();
+
+
+public static void main(String[] args) throws IOException {
+
+Scanner sc = new Scanner(System.in);
+
+System.out.println("Enter values in parse table ...");
+
+for(int i=0;i<n;i++)
+
+for(int j=0;j<m;j++)
+
+ptable[i][j] = sc.next();
+
+
+mapNT.put("S",0);mapNT.put("NP",1);mapNT.put("VP",2);mapNT.put("N",3);mapNT.put("V",4);mapNT.put("P",5); mapNT.put("PN",6);mapNT.put("D",7);
+
+
+mapT.put("championship",0);mapT.put("ball",1);mapT.put("toss",2);mapT.put("is",3);mapT.put("want",4);mapT.pu t("won",5);mapT.put("played",6);mapT.put("me",7);mapT.put("i",8);
+
+
+mapT.put("you",9);mapT.put("India",10);mapT.put("Australia",11);mapT.put("Steve",12);mapT.put("John",13);map T.put("the",14);mapT.put("a",15);mapT.put("an",16);
+
+
+//	---------------------------------------------------------------------------
+
+
+ArrayList<String> al = new ArrayList();
+
+Stack stack = new Stack();
+
+System.out.print("Enter the string to parse ?:: ");
+
+BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+
+String inputString = bf.readLine();
+
+String[] temp = inputString.split(" ");
+
+for(String s : temp)
+
+al.add(s);
+
+al.add("$");
+
+stack.add("$");stack.add("S");
+
+System.out.println("");
+
+System.out.println(al);
+
+System.out.println();
+
+
+int flag = 0;
+
+while(true){
+
+//System.out.println("Buffer:: "+al);
+
+//System.out.println("Stack :: "+stack); String a = al.get(0); if(a=="$"&&stack.peek()=="$"){
+
+flag = 1; break;
+
+}
+
+else if(a=="$") break;
+
+
+int nonterminal = mapNT.get(stack.pop());
+
+int terminal = mapT.get(a);
+
+String b = ptable[nonterminal][terminal];
+
+if(b.equals("0")){
+
+System.out.println("Invalid string..");
+
+break;
+
+}
+
+String tera[] = b.split(";");
+
+for(int i=tera.length-1;i>=0;i--)
+
+stack.push(tera[i]);
+
+
+
+System.out.println("Buffer:: "+al);
+
+System.out.println("Stack :: "+stack);
+
+
+if(al.get(0).equals(stack.peek())){
+
+//System.out.println("checking.."); al.remove(0);
+
+stack.pop();
+
+}
+
+}
+
+if(flag==1)
+
+System.out.println("String is correct.");
+
+else
+
+System.out.println("String is incorrect.");
+
+
+//---------------------------------------------------------------------------
+
+System.out.println("\n\nParse Table is "); for(int i=0;i<n;i++){
+
+for(int j=0;j<m;j++){ System.out.print(ptable[i][j]+" | ");
+
+}
+
+System.out.println();
+
+}
+
+
+}
+
+
+}
+
+OUTPUT :
+
+/*
+
+Enter values in parse table ...
+
+0 0 0 NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP NP;VP
+
+0 0 0 0 0 0 0 P P P PN PN PN PN D;N D;N D;N
+
+0 0 0 V;NP V;NP V;NP V;NP 0 0 0 0 0 0 0 0 0 0
+
+championship ball toss 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+0 0 0 is want won played 0 0 0 0 0 0 0 0 0 0
+
+0 0 0 0 0 0 0 me i you 0 0 0 0 0 0 0
+
+0 0 0 0 0 0 0 0 0 0 India Australia Steve John 0 0 0
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 the a an
+
+Enter the string to parse ?:: India won the championship
+
+
+[India, won, the, championship, $]
+
+
+Buffer:: [India, won, the, championship, $]
+
+Stack :: [$, VP, NP]
+
+Buffer:: [India, won, the, championship, $]
+
+Stack :: [$, VP, PN]
+
+Buffer:: [India, won, the, championship, $]
+
+Stack :: [$, VP, India]
+
+Buffer:: [won, the, championship, $]
+
+Stack :: [$, NP, V]
+
+Buffer:: [won, the, championship, $]
+
+Stack :: [$, NP, won]
+
+Buffer:: [the, championship, $]
+
+Stack :: [$, N, D]
+
+Buffer:: [the, championship, $]
+
+Stack :: [$, N, the]
+
+Buffer:: [championship, $]
+
+Stack :: [$, championship]
+
+String is correct.
+
+
+Parse Table is
+
+0| 0 | 0 | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP | NP;VP |
+
+0	| 0 | 0 | 0	| 0 | 0	| 0 | P | P | P | PN | PN | PN | PN | D;N | D;N | D;N |	
+0	| 0 | 0 | V;NP | V;NP | V;NP | V;NP | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |	
+championship | ball | toss | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |	
+0	| 0	| 0	| is | want | won | played | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |	
+0	| 0	| 0	| 0	| 0	| 0	| 0	| me | i | you | 0 | 0 | 0 | 0 | 0 | 0 | 0 |	
+0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| India | Australia | Steve | John | 0 | 0 | 0 |	
+0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| 0	| 0 | 0 | 0 | 0 | the | a | an |	*/
