@@ -1,0 +1,102 @@
+PROGRAM :
+import java.util.*;
+public class dag {
+    static String[] a; 
+     public static void main(String[] args)
+    {
+        Scanner sc=new Scanner(System.in);
+        HashMap<String,Integer> map=new HashMap<String,Integer>();
+        int n;
+        System.out.println("Enter the total levels of the DAG :");
+        n=sc.nextInt();
+        int tot=0;
+        for(int i=0;i<n;i++){
+            tot=tot+(int)Math.pow(2,i);
+        }
+        a=new String[tot];
+        System.out.println("Enter the DAG nodes(if any  child is not present then enter -)");
+        for(int i=0;i<tot;i++){
+            a[i]=sc.next();
+        }
+        ArrayList<String> arr=new ArrayList<String>();
+        int g;
+        arr.add(a[0]);
+        map.put(a[0], 0);
+        int ind=(tot-3)/2;
+        for(int i=1;i<=ind;i++){
+            g=2*i+1;
+            if(i%2==1){
+                if(arr.contains(a[(i-1)/2])==true && a[i].equals("--")==false && g<tot && (a[g].equals("--")==false ||a[g+1].equals("--")==false)){
+                     arr.add(a[i]);
+                     map.put(a[i],i);
+                }
+            }
+            else{
+                if(arr.contains(a[(i-2)/2]) && a[i].equals("--")==false && g<tot && (a[g].equals("--")==false ||a[g+1].equals("--")==false)){
+                     arr.add(a[i]);
+                     map.put(a[i],i);
+                }
+            }
+            
+        }
+         Collections.reverse(arr);
+            System.out.println("Sequence :");
+            System.out.println(arr);
+            int count =0;
+            int i=1;
+            String tt="",ss="";
+            for(String s:arr){
+                int f=map.get(s);
+                System.out.println("MOV "+a[(2*f+1)]+" "+"R"+i);
+                char aa=s.charAt(2);
+                if(aa=='+'){
+                      System.out.println("Add "+a[(2*f+2)]+" "+"R"+i);
+                       System.out.println("MOV "+"R"+i+" "+s.charAt(0)+s.charAt(1));
+                       count++;
+                       ss=s;
+                       if(count==2)
+                           break;
+                }
+                else if(aa=='-'){
+                    System.out.println("Sub "+a[(2*f+2)].charAt(0)+a[(2*f+2)].charAt(1)+" "+"R"+i);
+                    tt="R"+i;
+                    i=i-2;
+                   
+                }
+                i++;
+            }
+        System.out.println("Sub "+tt+" "+ss.charAt(0)+ss.charAt(1));
+      }
+}
+
+OUTPUT :
+Enter the total levels of the DAG :
+4
+Enter the DAG nodes(if any  child is not present then enter -)
+t4- 
+t1+ 
+t3- 
+a 
+b 
+e 
+t2+ 
+-- 
+-- 
+-- 
+-- 
+-- 
+-- 
+c 
+d
+Sequence :
+[t2+, t3-, t1+, t4-]
+MOV c R1
+Add d R1
+MOV R1 t2
+MOV e R2
+Sub t2 R2
+MOV a R1
+Add b R1
+MOV R1 t1
+Sub R2 t1
+BUILD SUCCESSFUL (total time: 5 seconds)
